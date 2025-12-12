@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { data } = require("react-router-dom");
 
 const productSchema = new mongoose.Schema({
     photo:{
