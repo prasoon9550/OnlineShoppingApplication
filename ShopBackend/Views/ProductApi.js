@@ -9,7 +9,6 @@
     const bcrypt = require("bcrypt");
     const jwt = require("jsonwebtoken");
     const JWT_SECRET = "MY_SUPER_SECRET_KEY";
-    const nodemailer = require("nodemailer");
     const crypto = require("crypto");
 
     // UPLOAD PRODUCTS API
