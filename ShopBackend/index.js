@@ -1,6 +1,6 @@
 // cd /d D:\shoppingapplication
 const express = require("express");
-const dotenv = require("dotenv");
+require('dotenv').config();
 const app = express();
 const cors = require("cors");
 const PORT = process.env.PORT || 8080;
@@ -21,8 +21,8 @@ app.use(productRoutes);
 app.use(cors());
 app.use("/api/products", productRoutes);
 
-
-mongoose.connect("mongodb://127.0.0.1:27017")
+console.log(process.env.mongoPassword)
+mongoose.connect(`mongodb+srv://vjprasoon1357:${process.env.mongoPassword}@cluster0.bzb3adf.mongodb.net/`)
 .then(()=>{
     console.log("Database connected")
 })
