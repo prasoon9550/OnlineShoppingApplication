@@ -1,8 +1,9 @@
 // cd /d D:\shoppingapplication
 const express = require("express");
+const dotenv = require("dotenv");
 const app = express();
 const cors = require("cors");
-const port = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080;
 const mongoose = require("mongoose");
 const productRoutes = require("./Views/ProductApi");
 
@@ -25,6 +26,6 @@ mongoose.connect("mongodb://127.0.0.1:27017")
 .then(()=>{
     console.log("Database connected")
 })
-app.listen(port, ()=>{
+app.listen(PORT, ()=>{
     console.log(`Server Started running on port ${PORT}`)
 })
