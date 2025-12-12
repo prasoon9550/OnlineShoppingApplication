@@ -2,7 +2,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const port = 8080;
+const PORT = process.env.PORT || 8080;
 const mongoose = require("mongoose");
 const productRoutes = require("./Views/ProductApi");
 
@@ -26,5 +26,5 @@ mongoose.connect("mongodb://127.0.0.1:27017")
     console.log("Database connected")
 })
 app.listen(port, ()=>{
-    console.log(`Server Started running on port ${port}`)
+    console.log(`Server Started running on port ${PORT}`)
 })
