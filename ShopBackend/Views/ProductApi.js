@@ -1,7 +1,6 @@
     const express = require("express");
     const router = express.Router();
     const formidable = require("formidable");
-    const IncomingForm = require("formidable");
     const productSchema = require("../Model/productschema");
     const userSchema = require("../Model/userSchema");
     const placeOrderSchema = require("../Model/placeOrderSchema");
@@ -9,8 +8,6 @@
     const bcrypt = require("bcrypt");
     const jwt = require("jsonwebtoken");
     const JWT_SECRET = "MY_SUPER_SECRET_KEY";
-    const nodemailer = require("nodemailer");
-    const crypto = require("crypto");
 
     // UPLOAD PRODUCTS API
     router.post("/uploadProduct", (req, res) => {
