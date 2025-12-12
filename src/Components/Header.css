@@ -1,0 +1,45 @@
+* {
+font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.fix-header{
+display: flex;
+justify-content: space-around;
+background-color: white;
+box-shadow: 6px 6px 18px 0 rgb(0 0 0 / .3);
+position: fixed;
+width: 1530px;
+height: 70px;
+z-index: 1000;
+place-items: center;
+top: 0;
+}
+.blog-img{
+width: 200px;
+}
+.header-items{
+margin: 20px;
+}
+.header-list{
+padding: 5px 6px;
+color: black;
+text-decoration: none;
+font-weight: 600;
+font-size: 18px;
+}
+.nav-bar{
+list-style: none;
+display: flex;
+margin-top: 20px;
+}
+.nav-bar li {
+display: inline-block;
+padding:10px;
+font-size:16px;
+}
+.home-img,.product-img,.cart-img,.check-img,.login-img,.sign-img,.logout-img{
+width: 20px; 
+height: 20px;
+float: left;
+font-size: 18px;
+margin-top: 2px;
+}

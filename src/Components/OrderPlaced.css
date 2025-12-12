@@ -1,0 +1,119 @@
+.order-placed-container {
+    max-width: 920px;
+    margin: 114px;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    color: #111;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  
+  /* Unified header + confirmation */
+  .order-header {
+    display: flex;
+    flex-direction: column;
+    border-left: 4px solid #0f8b5f;
+    background: #e8f5ef;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .order-header h1 {
+    color: #0f8b5f;
+    font-size: 28px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 8px 0;
+    font-family: sans-serif;
+  }
+  
+  .order-header .confirmation-msg {
+    font-size: 16px;
+    color: #555;
+    margin: 0;
+    font-family: sans-serif;
+  }
+  
+  /* Info box */
+  .order-info-box {
+    border-left: 4px solid #0f8b5f;
+    background: #e8f5ef;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    font-family: sans-serif;
+  }
+  
+  /* Blocks like Shipping & Items */
+  .order-block {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  
+  .order-block h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #111;
+    font-family: sans-serif;
+  }
+  
+  /* Ordered items */
+  .ordered-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+  }
+  
+  .ordered-item:last-child {
+    border-bottom: none;
+  }
+  
+  .ordered-img {
+    width: 90px;
+    height: 110px;
+    object-fit: contain;
+    border-radius: 5px;
+    background: #f2f2f2;
+  }
+  
+  .ordered-item h3 {
+    font-size: 15px;
+    margin: 0 0 5px 0;
+    color: #111;
+    font-family: sans-serif;
+  }
+  
+  .ordered-item p {
+    margin: 12px 0;
+    font-size: 16px;
+    color: #555;
+    font-family: sans-serif;
+  }
+
+  p{
+    font-family: sans-serif;
+  }
+  
+  /* Total */
+  .order-total {
+    background: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: right;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    color: #111;
+  }
+  

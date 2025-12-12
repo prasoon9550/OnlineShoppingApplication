@@ -1,0 +1,286 @@
+/* Full-screen / wide checkout + bigger images + dynamic payment UI */
+
+/* Root & base */
+:root {
+  --bg: #f2f8ff;
+  --card-bg: #ffffff;
+  --accent: #00a86b;
+  --muted: #64748b;
+  --shadow: 0 10px 28px rgba(9,30,66,0.06);
+  --radius: 10px;
+}
+
+.checkout-page.fs {
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 110px 40px; /* wider padding for full-screen feel */
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #0b1330;
+}
+
+/* Make inner container full width (wide) */
+.checkout-inner.wide {
+  display: flex;
+  max-width: 1600px;  
+  gap: 30px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+/* Left column */
+.checkout-left { flex: 1; min-width: 720px; } /* allow large left area */
+
+/* Right column fixed size */
+.checkout-right { width: 380px; }
+
+/* Headline */
+.headline {
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+/* Timeline and icons */
+.timeline { display: flex; flex-direction: column; gap: 18px; position: relative; }
+
+/* each row contains icon + card */
+.timeline-row { display: flex; gap: 18px; align-items: flex-start; }
+
+/* icon circle */
+.timeline-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-top: 6px;
+}
+
+.timeline-icon.green { background:green; color:#00a86b; border: 4px solid #e8fbef; z-index: 10;}
+.timeline-icon.teal  { background:green; color:#00a2a2; border: 4px solid #e8f8fb; z-index: 10;}
+.timeline-icon.gray  { background:#f1f3f6; color:#6b7280; border: 4px solid #f1f3f6; z-index: 10;}
+
+/* dotted vertical line */
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 23px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background-image: linear-gradient(#cfe9ff 33%, rgba(255,255,255,0) 0%);
+  background-size: 2px 12px;
+  opacity: 0.95;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+/* card panels */
+.card {
+  background: var(--card-bg);
+  padding: 18px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  flex: 1;
+  border: 1px solid rgba(11,56,129,0.02);
+}
+
+/* step title */
+.step-title { font-weight: 700; margin-bottom: 12px;font-family: sans-serif; }
+
+/* address tiles */
+.address-list { display:flex; gap:12px; flex-wrap:wrap; }
+.address-tile {
+  width: 400px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e9f2ff;
+  background: white;
+  cursor: pointer;
+  margin-left: 38px;
+}
+.address-tile.active {
+  border: 2px solid var(--accent);
+  box-shadow: 0 14px 34px rgba(0,168,107,0.06);
+}
+.address-tile.add {
+  display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--muted); border: 2px dashed #eef7fb;
+}
+.address-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.addr-name { font-weight: 900; }
+.addr-line, .addr-mobile { color: var(--muted); font-size: 14px;font-family: sans-serif;margin-top: 12px; }
+
+/* order item (bigger product image) */
+.order-item.big { display:flex; gap:18px; padding: 14px 0; align-items:flex-start; border-top:1px solid #f1f5f9; }
+.order-item.big:first-child { border-top: none; padding-top:0; }
+
+.order-img.big { width: 110px; height: 144px; object-fit: contain; border-radius: 8px; border: 1px solid #eef6ff; }
+
+.order-meta { flex:1; }
+.order-title { font-weight:900; margin-bottom:6px; font-size:16px; }
+.seller { color:var(--muted); margin-bottom:10px; font-size:13px; }
+
+.price-row { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
+.price { font-weight:900; color:#0b6b40; font-size:20px; }
+.old-price { text-decoration:line-through; color:var(--muted); font-size:13px; }
+.offer { color:#10b981; font-weight:800; font-size:13px; }
+
+.qty-controls { display:flex; align-items:center; gap:10px; margin-top:6px; border: 2px solid rgb(243, 194, 0);width: 13%;border-radius: 30px;}
+.qty-btn { width:34px; height:34px;cursor:pointer; font-weight:900;border: none;background: none; }
+.qty-count { min-width:36px; text-align:center; font-weight:900; }
+
+/* Payment tabs (small pills) */
+.payment-tabs { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.pay-tab {
+  padding:8px 14px;
+  border-radius:20px;
+  border:1px solid #beceea;
+  background: #fff;
+  cursor:pointer;
+  font-weight:800;
+}
+.pay-tab.active { background: linear-gradient(90deg, #e8fbef, #e8f8fb); border: 2px solid var(--accent); box-shadow: 0 12px 30px rgba(0,168,107,0.06); }
+
+/* dynamic panels */
+.payment-panel { margin-top: 10px; }
+.dynamic { margin-top: 12px; margin-left: 18px;}
+
+/* saved cards (dynamic) */
+.saved-cards.dynamic { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+.card-saved {
+  width: 220px;
+  min-height: 96px;
+  background: linear-gradient(180deg,#ffffff,#fbfffb);
+  border-radius:8px;
+  padding:12px;
+  border:1px solid #eef7f7;
+  box-shadow: 0 10px 24px rgba(3,37,76,0.03);
+  cursor:pointer;
+  display:flex; flex-direction:column; justify-content:space-between;
+}
+.card-saved.selected, .card-saved:hover {
+  border: 2px solid var(--accent);
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(0,168,107,0.08);
+  width: 34%;
+}
+.card-saved.add { display:flex; align-items:center; justify-content:center; font-weight:900; color:var(--muted); border:2px dashed #eef7fb;width: 34%; }
+.card-brand { font-weight:900; color:#37517e; font-size:16px; }
+.card-num { font-weight:900; margin-top:8px; color:#0b1b2b; margin-bottom: 6px;}
+.card-exp { color:var(--muted); font-weight:700; font-size:15px; justify-content: space-between;display: flex; }
+
+/* card form inputs */
+.card-form.dynamic input,
+.netbank-panel select,
+.upi-panel input,
+.emi-panel select {
+  width: 48%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #dfe9f6;
+  font-size: 14px;
+  margin-bottom: 10px;
+  outline: none;
+}
+
+/* UPI/EMI helper text */
+.bank-note, .upi-hint, .emi-note { color:var(--muted); font-size:13px; margin-top:6px; }
+
+/* pay button */
+.pay-actions { margin-top: 14px; }
+.pay-now {
+  padding: 12px 18px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow: 0 12px 28px rgba(0,168,107,0.18);
+}
+
+/* right column order details */
+.order-details { padding:16px; top: 44px;border-top: 5px solid blue; }
+.order-details h3 { margin-bottom: 12px; font-weight:900; }
+.detail-row { display:flex; justify-content:space-between; margin:8px 0; color:var(--muted); }
+.detail-row.total { color:#0b6b40; font-weight:900; font-size:16px; }
+.muted { color:#10b981; font-weight:800; }
+
+/* savings box */
+.savings { margin-top:12px; background: linear-gradient(90deg,#e6fff1,#f9fff6); padding:10px; border-radius:8px; color:#0b6b40; font-weight:800; text-align:center; font-size:15px; }
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .checkout-inner.wide { width: calc(100% - 40px); flex-direction: column; max-width: 1000px; }
+  .checkout-left { min-width: 0; }
+  .checkout-right { width: 100%; }
+  .order-img.big { width: 140px; height: 140px; }
+}
+
+@media (max-width: 720px) {
+  .order-img.big { width: 120px; height: 120px; }
+}
+.remove{
+  border: none;
+  font-family: sans-serif;
+  font-size: 14px;
+  padding: 8px 18px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-weight:600;
+  cursor:pointer;
+
+}
+.live-card {
+  width: 340px;
+  height: 200px;
+  border-radius: 18px;
+  padding: 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.card-type-text {
+  font-size: 18px;
+  font-weight: bold;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  opacity: 0.8;
+}
+
+.card-number {
+  font-size: 22px;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.card-holder {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.card-expiry {
+  font-size: 14px;
+  opacity: 0.9;
+}
+.order-btn{
+  margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background: rgb(255, 164, 28);
+    border: 1px solid rgb(240, 136, 4);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: sans-serif;
+    color: #fff;
+}

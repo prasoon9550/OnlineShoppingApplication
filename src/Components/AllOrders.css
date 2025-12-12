@@ -1,0 +1,157 @@
+.amz-order-box {
+    width: 80%;
+    margin: 30px auto;
+    background: #fff;
+    border: 1px solid #d5d9d9;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    padding: 0px;
+  }
+  
+  .amz-order-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e6e6e6;
+    padding-bottom: 12px;
+    font-size: 14px;
+    color: #333;
+    background: #e6e6e6;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 14px;
+  }
+  
+  .amz-order-top p {
+    width: 20%;
+    margin: 0;
+    font-family: sans-serif;
+  }
+  
+  .amz-links {
+    text-align: right;
+    width: 30%;
+    font-size: 14px;
+  }
+  
+  .amz-links a {
+    color: #007185;
+    text-decoration: none;
+    font-family: sans-serif;
+  }
+  
+  .amz-order-bottom {
+    display: flex;
+    padding: 14px;
+    gap: 20px;
+  }
+  
+  .amz-img {
+    width: 98px;
+    height: 110px;
+    object-fit: contain;
+    margin: 0px 0px;
+  }
+  
+  .amz-middle {
+    flex: 1;
+  }
+  
+  .amz-arriving {
+    font-size: 15px;
+    font-weight: bold;
+    color: #007185;
+    margin: 0 0 5px 0;
+    font-family: sans-serif;
+  }
+  
+  .amz-title {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    color: #111;
+    font-family: sans-serif;
+  }
+  
+  .amz-buy-again {
+    background: #ffd814;
+    border: 1px solid #fcd200;
+    padding: 8px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: sans-serif;
+    font-size: 14px;
+  }
+  
+  .amz-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .yellow-btn {
+    background: #ffd814;
+    border: 1px solid #fcd200;
+    padding: 8px 15px;
+    border-radius: 7px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 8px;
+    font-family: sans-serif;
+    font-size: 14px;
+  }
+  
+  .white-btn {
+    background: #fff;
+    border: 1px solid #c8c8c8;
+    padding: 8px 15px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-size: 14px;
+  }
+  .black-btn {
+    background: #fff;
+    border: 1px solid #c8c8c8;
+    padding: 8px 15px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-size: 14px;
+  }
+  
+  .red-text {
+    color: #c45500;
+    font-weight: bold;
+  }
+  .blk-text {
+    color: #000;
+    font-weight: bold;
+  }
+  
+  .amz-archive {
+    color: #007185;
+    font-size: 14px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  .your-order{
+    margin: 0px 0px;
+    font-family: sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 0px;
+    color: #000;
+  }
+  .order-txt{
+  margin-top: 130px;
+  margin-left: 152px;
+  width: 80%;
+  padding: 10px;
+  border-radius: 10px;
+  }
+  strong{
+  font-family: sans-serif;
+  font-size: 14px;
+  }
+  
