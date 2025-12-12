@@ -13,7 +13,7 @@ import Cart from './Components/Cart';
 import ProductDetails from './Components/ProductDetails';
 import Checkout from './Components/Checkout';
 import AllOrders from './Components/AllOrders';
-import OrderPlaced from './Components/orderPlaced';
+import OrderPlaced from './Components/OrderPlaced';
 import MyAccount from './Components/Myaccount';
 
 function App() {

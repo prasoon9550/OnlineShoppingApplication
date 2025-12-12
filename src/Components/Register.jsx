@@ -23,7 +23,7 @@ export default function Register() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:8080/api/products/userRegister", {
+    const res = await fetch("https://onlineshoppingapplicationbackend.onrender.com/api/products/userRegister", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
