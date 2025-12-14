@@ -1,193 +1,329 @@
-    import React, { useState, useEffect } from "react";
-    import "./Myaccount.css";
-    import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import "./Checkout.css";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
-    export default function MyAccount() {
-    const [selected, setSelected] = useState("profile");
-    const [isEditing, setIsEditing] = useState(false);
+export default function Checkout() {
+  const navigate = useNavigate();
 
-    const [userData, setUserData] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    email: "",
-    phoneNo: "",
-    address: ""
-    });
+  // ---------------- STATES ----------------
+  const [cart, setCart] = useState([]);
+  const [userName, setUserName] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [userAddress, setUserAddress] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [loadingAddress, setLoadingAddress] = useState(true);
 
-    const [editData, setEditData] = useState(userData);
-    const username = localStorage.getItem("userName");
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
+  const [paymentTab, setPaymentTab] = useState("card");
 
-    useEffect(() => {
+  // CARD STATES
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCVV, setCardCVV] = useState("");
+
+  // ---------------- FETCH CART ----------------
+  useEffect(() => {
+    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(storedCart);
+  }, []);
+
+  // ---------------- FETCH USER ADDRESS (MAIN FIX) ----------------
+  useEffect(() => {
+    const username =
+      localStorage.getItem("userName") ||
+      (JSON.parse(localStorage.getItem("user")) || {}).userName;
+
     if (!username) return;
 
-    fetch(`https://onlineshoppingapplicationbackend.onrender.com/getUserDetailsByUserName/${username}`)
-    .then((res) => res.json())
-    .then((result) => {
-    const data = result.data;
-    const newUser = {
-    firstName: data.firstName || "",
-    middleName: data.middleName || "",
-    lastName: data.lastName || "",
-    email: data.email || "",
-    phoneNo: data.phoneNo || "",
-    address: data.address || ""
-    };
+    setUserName(username);
+    setLoadingAddress(true);
 
-    setUserData(newUser);
-    setEditData(newUser);
-    })
-    .catch((err) => console.log("API Error:", err));
-    }, [username]);
+    fetch(
+      `https://onlineshoppingapplicationbackend.onrender.com/getUserDetailsByUserName/${username}`
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        const data = result?.data;
+        if (!data) return;
 
-    const handleChange = (e) => {
-    setEditData({ ...editData, [e.target.name]: e.target.value });
-    };
+        const name = [data.firstName, data.middleName, data.lastName]
+          .filter(Boolean)
+          .join(" ");
 
-    const handleSave = () => {
-    setUserData(editData);
-    setIsEditing(false);
+        setFullName(name);
+        setMobile(data.phoneNo || "");
+        setUserAddress(data.address || "");
+      })
+      .catch((err) => {
+        console.error("Address fetch error:", err);
+      })
+      .finally(() => setLoadingAddress(false));
+  }, []);
 
-    // API CALL for saving details (optional)
-    // fetch("http://your-api/updateUser", { method: "PUT", body: JSON.stringify(editData) })
-    };
+  // ---------------- HELPERS ----------------
+  const addresses =
+    fullName || userAddress || mobile
+      ? [
+          {
+            name: fullName,
+            address: userAddress,
+            mobile: mobile,
+          },
+        ]
+      : [];
 
-    const handleCancel = () => {
-    setEditData(userData);
-    setIsEditing(false);
-    };
-
-    return (
-    <div className="account-container">
-    <div className="sidebar">
-    <h3 className="hello-user">Hello, {userData.firstName || "User"}</h3>
-
-    <div className="sidebar-section">
-    <Link to="/allorders" className="no-decoration">
-    <h4>MY ORDERS</h4>
-    </Link>
-    </div>
-
-    <div className="sidebar-section">
-    <h4>ACCOUNT SETTINGS</h4>
-    <p className={selected === "profile" ? "a" : ""} onClick={() => setSelected("profile")}>
-    Profile Information
-    </p>
-    <p className={selected === "address" ? "a" : ""} onClick={() => setSelected("address")}>
-    Manage Addresses
-    </p>
-    </div>
-
-    <div className="sidebar-section">
-    <h4>PAYMENTS</h4>
-    <p>Gift Cards</p>
-    <p>Saved UPI</p>
-    <p>Saved Cards</p>
-    </div>
-    </div>
-
-    {/* RIGHT CONTENT */}
-    <div className="content-area">
-    {selected === "profile" && (
-    <div className="profile-box">
-
-    <div className="profile-header">
-        <h2>Personal Information</h2>
-
-        {!isEditing && (
-        <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit</button>
-        )}
-    </div>
-
-    <div className="row">
-        <div>
-        <label>First Name</label>
-        <input
-            name="firstName"
-            className="fname"
-            type="text"
-            value={isEditing ? editData.firstName : userData.firstName}
-            onChange={handleChange}
-            readOnly={!isEditing}
-        />
-        </div>
-
-        <div>
-        <label>Last Name</label>
-        <input
-            name="lastName"
-            className="lname"
-            type="text"
-            value={isEditing ? editData.lastName : userData.lastName}
-            onChange={handleChange}
-            readOnly={!isEditing}
-        />
-        </div>
-    </div>
-
-    <div>
-        <label>Email Address</label>
-        <input
-        name="email"
-        className="email"
-        type="text"
-        value={isEditing ? editData.email : userData.email}
-        onChange={handleChange}
-        readOnly={!isEditing}
-        />
-    </div>
-
-    <div style={{ marginTop: "18px" }}>
-        <label>Mobile Number</label>
-        <input
-        name="phoneNo"
-        className="mnum"
-        type="text"
-        value={isEditing ? editData.phoneNo : userData.phoneNo}
-        onChange={handleChange}
-        readOnly={!isEditing}
-        />
-    </div>
-
-    {/* SAVE + CANCEL BUTTONS */}
-    {isEditing && (
-        <div className="btn-row">
-        <button className="save-btn" onClick={handleSave}>Update</button>
-        <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
-        </div>
-    )}
-    </div>
-    )}
-
-    {selected === "address" && (
-    <div className="address-container">
-
-    <h2 style={{marginBottom:"30px"}}>Manage Addresses</h2>
-
-    {/* ADD NEW ADDRESS BUTTON */}
-    <div className="add-address-box">
-    <span className="plus-icon">+</span> ADD A NEW ADDRESS
-    </div>
-
-    {/* ADDRESS CARD */}
-    <div className="address-card">
-    <div className="address-type">HOME</div>
-
-    <div className="address-name-mobile">
-    <strong>{userData.firstName} {userData.lastName}</strong>
-    <span className="mobile">{userData.phoneNo}</span>
-    </div>
-
-    <div className="full-address">
-    {userData.address}
-    </div>
-
-    <div className="dots-menu">⋮</div>
-    </div>
-
-    </div>
-    )}
-    </div>
-    </div>
+  const getTotal = () =>
+    cart.reduce(
+      (sum, item) => sum + Number(item.price) * Number(item.quantity),
+      0
     );
+
+  const renderImageSrc = (item) => {
+    if (item.image) return item.image;
+    return "https://via.placeholder.com/120";
+  };
+
+  // ---------------- PLACE ORDER ----------------
+  async function placeOrder() {
+    try {
+      if (!userName) {
+        Swal.fire("Login Required", "Please login first", "warning");
+        navigate("/login");
+        return;
+      }
+  
+      if (!fullName || !mobile || !userAddress) {
+        Swal.fire("Address Missing", "Please add delivery address", "warning");
+        return;
+      }
+  
+      if (cart.length === 0) {
+        Swal.fire("Cart Empty", "Your cart is empty", "error");
+        return;
+      }
+  
+      // ---------- PAYMENT VALIDATION ----------
+      let paymentDetails = {};
+  
+      if (paymentTab === "card") {
+        if (cardNumber.replace(/\s/g, "").length !== 16)
+          return Swal.fire("Invalid Card", "Enter 16-digit card number", "error");
+  
+        if (cardName.length < 3)
+          return Swal.fire("Invalid Name", "Enter card holder name", "error");
+  
+        if (!/^\d{2}\/\d{2}$/.test(cardExpiry))
+          return Swal.fire("Invalid Expiry", "Use MM/YY format", "error");
+  
+        if (cardCVV.length !== 3)
+          return Swal.fire("Invalid CVV", "Enter 3-digit CVV", "error");
+  
+        paymentDetails = {
+          cardLast4: cardNumber.replace(/\s/g, "").slice(-4),
+          cardType: cardNumber.startsWith("4")
+            ? "VISA"
+            : cardNumber.startsWith("5")
+            ? "MASTERCARD"
+            : "RUPAY",
+        };
+      }
+  
+      if (paymentTab === "upi") {
+        if (!upiId || !upiId.includes("@")) {
+          return Swal.fire("Invalid UPI", "Enter valid UPI ID", "error");
+        }
+  
+        paymentDetails = { upiId };
+      }
+  
+      if (paymentTab === "emi") {
+        if (!emiPlan) {
+          return Swal.fire("Select EMI", "Please select EMI plan", "error");
+        }
+  
+        paymentDetails = { emiPlan };
+      }
+  
+      if (paymentTab === "cod") {
+        paymentDetails = { cod: true };
+      }
+  
+      // ---------- ITEMS ----------
+      const items = cart.map((it) => ({
+        productId: it._id,
+        name: it.title,
+        price: Number(it.price),
+        quantity: Number(it.quantity),
+        image: it.image || "",
+      }));
+  
+      // ---------- FINAL PAYLOAD ----------
+      const payload = {
+        userName,
+        paymentMethod: paymentTab.toUpperCase(), // CARD | COD | UPI | EMI
+        paymentDetails,
+        address: {
+          fullName,
+          phoneNo: mobile,
+          street: userAddress,
+        },
+        items,
+        totalAmount: getTotal(),
+      };
+  
+      console.log("ORDER PAYLOAD:", payload);
+  
+      const res = await fetch(
+        "https://onlineshoppingapplicationbackend.onrender.com/api/products/placeOrder",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(data.message || "Order failed");
+      }
+  
+      if (data.success) {
+        localStorage.setItem(
+          "clientPlacedOrder",
+          JSON.stringify({
+            ...payload,
+            placedAt: new Date().toISOString(),
+          })
+        );
+  
+        localStorage.removeItem("cart");
+        Swal.fire("Success", "Order placed successfully", "success");
+        navigate("/orderplaced");
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", err.message || "Server error", "error");
     }
+  }
+  
+
+  // ---------------- UI ----------------
+  return (
+    <div className="checkout-page">
+      <div className="checkout-left">
+        <h2>Checkout</h2>
+
+        {/* ADDRESS */}
+        <div className="card">
+          <h3>Delivery Address</h3>
+
+          {loadingAddress && <p>Loading address...</p>}
+
+          {!loadingAddress &&
+            addresses.map((a, idx) => (
+              <div
+                key={idx}
+                className={`address-tile ${
+                  selectedAddressIndex === idx ? "active" : ""
+                }`}
+                onClick={() => setSelectedAddressIndex(idx)}
+              >
+                <b>{a.name}</b>
+                <p>{a.address}</p>
+                <p>Mobile No : {a.mobile}</p>
+              </div>
+            ))}
+
+          
+        </div>
+
+        {/* ORDER SUMMARY */}
+        <div className="card">
+          <h3>Order Summary</h3>
+
+          {cart.map((item) => (
+            <div key={item._id} className="order-item">
+              <img src={renderImageSrc(item)} alt="" />
+              <div>
+                <div>{item.title}</div>
+                <div>₹{item.price}</div>
+                <div>Qty: {item.quantity}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* PAYMENT */}
+        <div className="card">
+          <h3>Payment Method</h3>
+
+          <div className="payment-tabs">
+            {["card", "cod"].map((p) => (
+              <button
+                key={p}
+                className={paymentTab === p ? "active" : ""}
+                onClick={() => setPaymentTab(p)}
+              >
+                {p.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
+          {paymentTab === "card" && (
+            <div className="card-form">
+              <input
+                placeholder="Card Number"
+                maxLength="19"
+                value={cardNumber}
+                onChange={(e) =>
+                  setCardNumber(
+                    e.target.value
+                      .replace(/[^\d]/g, "")
+                      .replace(/(.{4})/g, "$1 ")
+                      .trim()
+                  )
+                }
+              />
+              <input
+                placeholder="Name on Card"
+                value={cardName}
+                onChange={(e) => setCardName(e.target.value)}
+              />
+              <input
+                placeholder="MM/YY"
+                maxLength="5"
+                value={cardExpiry}
+                onChange={(e) =>
+                  setCardExpiry(
+                    e.target.value.replace(/[^\d]/g, "").replace(/(\d{2})(\d)/, "$1/$2")
+                  )
+                }
+              />
+              <input
+                placeholder="CVV"
+                maxLength="3"
+                value={cardCVV}
+                onChange={(e) => setCardCVV(e.target.value.replace(/[^\d]/g, ""))}
+              />
+            </div>
+          )}
+        </div>
+
+        <button className="pay-now" onClick={placeOrder}>
+          Place Order
+        </button>
+      </div>
+
+      {/* RIGHT SIDE */}
+      <div className="checkout-right">
+        <div className="card sticky">
+          <h3>Order Details</h3>
+          <p>Total: ₹{getTotal()}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
