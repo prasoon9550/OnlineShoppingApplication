@@ -11,7 +11,7 @@
 
   // LOAD PRODUCTS
   useEffect(() => {
-  fetch(`http://localhost:8080/products/${category}`)
+  fetch(`https://onlineshoppingapplicationbackend.onrender.com/api/products/${category}`)
   .then((res) => res.json())
   .then((data) => {
   if (data.success) setProducts(data.data);

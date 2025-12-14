@@ -62,7 +62,7 @@
 
   const userName = window.currentUserName; 
 
-  const res = await fetch("http://localhost:8080/api/products/logout", {
+  const res = await fetch("https://onlineshoppingapplicationbackend.onrender.com/api/products/logout", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ userName })

@@ -21,7 +21,7 @@
     useEffect(() => {
     if (!username) return;
 
-    fetch(`http://localhost:8080/getUserDetailsByUserName/${username}`)
+    fetch(`https://onlineshoppingapplicationbackend.onrender.com/api/getUserDetailsByUserName/${username}`)
     .then((res) => res.json())
     .then((result) => {
     const data = result.data;

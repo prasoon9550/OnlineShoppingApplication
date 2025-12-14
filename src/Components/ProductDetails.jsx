@@ -19,7 +19,7 @@ export default function ProductDetails() {
 
   // LOAD PRODUCT
   useEffect(() => {
-    fetch(`http://localhost:8080/product/${id}`)
+    fetch(`https://onlineshoppingapplicationbackend.onrender.com/api/product/${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
