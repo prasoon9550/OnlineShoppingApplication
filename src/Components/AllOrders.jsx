@@ -10,7 +10,7 @@ export default function AllOrders() {
     async function fetchOrders() {
       try {
         const res = await axios.get(
-          `https://onlineshoppingapplicationbackend.onrender.com/api/getOrderDetailsByUserName/${userName}`
+          `https://onlineshoppingapplicationbackend.onrender.com/getOrderDetailsByUserName/${userName}`
         );
 
         if (res.data.success) {

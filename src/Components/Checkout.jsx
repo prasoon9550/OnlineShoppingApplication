@@ -7,7 +7,7 @@
     export default function Checkout() {
     const [cart, setCart] = useState([]);
     const [fullName, setFullName] = useState("");
-    const [userName, setUserName] = useState("");
+    const [username, setUserName] = useState("");
     const [userAddress, setUserAddress] = useState("");
     const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
     const [paymentTab, setPaymentTab] = useState("card");
@@ -34,7 +34,7 @@
 
     useEffect(() => {
     function handleUserLogin(e) {
-    setUserName(e.detail.userName);
+      setUserName(e.detail.userName);
     setFullName(e.detail.fullName);
     setUserAddress(e.detail.address);
     setMobile(e.detail.mobile);
@@ -49,6 +49,42 @@
     const name = localStorage.getItem("userName");
     if (name) setUserName(name);
     }, []);
+
+    useEffect(() => {
+      const storedUsername =
+        window.currentUserName ||
+        localStorage.getItem("userName") ||
+        "";
+    
+      if (storedUsername) {
+        setUserName(storedUsername);
+      }
+    }, []);
+
+    
+    useEffect(() => {
+      if (!username) return;
+    
+      fetch(
+        `https://onlineshoppingapplicationbackend.onrender.com/getUserDetailsByUserName/${username}`
+      )
+        .then((res) => res.json())
+        .then((result) => {
+          if (!result?.data) return;
+    
+          const data = result.data;
+    
+          const fullNameFromApi = `${data.firstName || ""} ${data.middleName || ""} ${data.lastName || ""}`.trim();
+    
+          setFullName(fullNameFromApi);
+          setMobile(data.phoneNo || "");
+          setUserAddress(data.address || "");
+        })
+        .catch((err) => {
+          console.error("User details API error:", err);
+        });
+    }, [username]);
+    
 
 
 
