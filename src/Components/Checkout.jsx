@@ -137,161 +137,195 @@
     );
 
     async function placeOrder() {
-    try {
-    const cartItems = cart.length ? cart : JSON.parse(localStorage.getItem("cart")) || [];
-    const storedUser = JSON.parse(localStorage.getItem("user")) || {};
-    const currentUser = window.currentUserName || storedUser.userName || localStorage.getItem("userName") || "";
-
-    const cardNumberInput = document.getElementById("cardNumber");
-    const cardNumber = cardNumberInput.value;
-
-    const cardNameInput = document.getElementById("cardName");
-    const cardName = cardNameInput.value;
-
-    const cardMonthYearInput = document.getElementById("cardMonthYear");
-    const cardMonthYear = cardMonthYearInput.value;
-
-    const cardCvvInput = document.getElementById("cardCvv");
-    const cardCvv = cardCvvInput.value;
-
-
-
-    if (!currentUser) {
-    Swal.fire("Not logged in", "Please login to place an order.", "warning");
-    navigate("/login");
-    return;
-    }
-
-    if (paymentTab === "card") {
-      if (!cardNumber || cardNumber.replace(/\s/g, "").length !== 16) {
-        Swal.fire("Invalid Card", "Please enter a valid 16-digit card number.", "error");
-        cardNumberInput.style.border = "1px solid red";
-        return;
-      } else {
-        cardNumberInput.style.border = "1px solid #dfe9f6";
+      try {
+        const cartItems =
+          cart.length ? cart : JSON.parse(localStorage.getItem("cart")) || [];
+    
+        const storedUser = JSON.parse(localStorage.getItem("user")) || {};
+        const currentUser =
+          window.currentUserName ||
+          storedUser.userName ||
+          localStorage.getItem("userName") ||
+          "";
+    
+        const cardNumberInput = document.getElementById("cardNumber");
+        const cardNameInput = document.getElementById("cardName");
+        const cardMonthYearInput = document.getElementById("cardMonthYear");
+        const cardCvvInput = document.getElementById("cardCvv");
+    
+        const cardNumber = cardNumberInput?.value || "";
+        const cardName = cardNameInput?.value || "";
+        const cardMonthYear = cardMonthYearInput?.value || "";
+        const cardCvv = cardCvvInput?.value || "";
+    
+        if (!currentUser) {
+          Swal.fire("Not logged in", "Please login to place an order.", "warning");
+          navigate("/login");
+          return;
+        }
+    
+        /* ---------------- CARD VALIDATION ---------------- */
+        if (paymentTab === "card") {
+          if (!cardNumber || cardNumber.replace(/\s/g, "").length !== 16) {
+            Swal.fire("Invalid Card", "Please enter a valid 16-digit card number.", "error");
+            cardNumberInput.style.border = "1px solid red";
+            return;
+          } else cardNumberInput.style.border = "1px solid #dfe9f6";
+    
+          if (!cardName || cardName.trim().length < 3) {
+            Swal.fire("Invalid Name", "Please enter name on the card.", "error");
+            cardNameInput.style.border = "1px solid red";
+            return;
+          } else cardNameInput.style.border = "1px solid #dfe9f6";
+    
+          if (!cardMonthYear || !/^\d{2}\/\d{2}$/.test(cardMonthYear)) {
+            Swal.fire("Invalid Expiry", "Please enter expiry in MM/YY format.", "error");
+            cardMonthYearInput.style.border = "1px solid red";
+            return;
+          } else cardMonthYearInput.style.border = "1px solid #dfe9f6";
+    
+          if (!cardCvv || cardCvv.length !== 3) {
+            Swal.fire("Invalid CVV", "Please enter a valid 3-digit CVV.", "error");
+            cardCvvInput.style.border = "1px solid red";
+            return;
+          } else cardCvvInput.style.border = "1px solid #dfe9f6";
+        }
+    
+        /* ---------------- ADDRESS CHECK ---------------- */
+        if (!fullName || !mobile || !userAddress) {
+          Swal.fire("Missing address", "Please provide delivery address details.", "warning");
+          return;
+        }
+    
+        if (cartItems.length === 0) {
+          Swal.fire("Cart Empty", "There are no items in your cart.", "error");
+          return;
+        }
+    
+        /* ---------------- ITEMS ---------------- */
+        const getItemImage = (item) => {
+          if (item.image) return item.image;
+          if (item.photoUrl) return item.photoUrl;
+          try {
+            return renderImageSrc(item);
+          } catch {
+            return "";
+          }
+        };
+    
+        const items = cartItems.map((it, idx) => ({
+          productId: it._id || it.productId || it.id || "",
+          name: it.title || it.name || it.productName || `Product ${idx + 1}`,
+          price: Number(it.price || it.amount || 0),
+          quantity: Number(it.quantity || it.qty || 1),
+          image: getItemImage(it),
+        }));
+    
+        const totalAmount = items.reduce(
+          (sum, it) => sum + it.price * it.quantity,
+          0
+        );
+    
+        const addressObj =
+          typeof userAddress === "string"
+            ? {
+                fullName,
+                phoneNo: mobile,
+                houseNo: "",
+                street: userAddress,
+                city: "",
+                state: "",
+                pincode: "",
+              }
+            : {
+                fullName: userAddress.fullName || fullName,
+                phoneNo: userAddress.phoneNo || mobile,
+                houseNo: userAddress.houseNo || "",
+                street: userAddress.street || "",
+                city: userAddress.city || "",
+                state: userAddress.state || "",
+                pincode: userAddress.pincode || "",
+              };
+    
+        /* ---------------- PAYMENT FIX ---------------- */
+        let paymentDetails = {};
+    
+        if (paymentTab === "card") {
+          paymentDetails = {
+            cardLast4: cardNumber.replace(/\s/g, "").slice(-4),
+            cardType: cardNumber.startsWith("4")
+              ? "VISA"
+              : cardNumber.startsWith("5")
+              ? "MASTERCARD"
+              : "RUPAY",
+          };
+        }
+    
+        if (paymentTab === "upi") {
+          if (!upiId || !upiId.includes("@")) {
+            Swal.fire("Invalid UPI", "Please enter valid UPI ID.", "error");
+            return;
+          }
+          paymentDetails = { upiId };
+        }
+    
+        if (paymentTab === "emi") {
+          if (!emiPlan) {
+            Swal.fire("Select EMI", "Please select EMI plan.", "error");
+            return;
+          }
+          paymentDetails = { emiPlan };
+        }
+    
+        if (paymentTab === "cod") {
+          paymentDetails = { cod: true };
+        }
+    
+        /* ---------------- FINAL PAYLOAD ---------------- */
+        const payload = {
+          userName: currentUser,
+          paymentMethod: paymentTab.toUpperCase(), // CARD / COD / UPI / EMI
+          paymentDetails,
+          address: addressObj,
+          items,
+          totalAmount,
+        };
+    
+        console.log("PlaceOrder payload ->", payload);
+    
+        const res = await fetch(
+          "https://onlineshoppingapplicationbackend.onrender.com/api/products/placeOrder",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
+    
+        const data = await res.json();
+        console.log("PlaceOrder response ->", data);
+    
+        if (data.success) {
+          localStorage.setItem(
+            "clientPlacedOrder",
+            JSON.stringify({
+              ...payload,
+              placedAt: new Date().toISOString(),
+            })
+          );
+    
+          Swal.fire("Success", "Order placed successfully!", "success");
+    
+          localStorage.removeItem("cart");
+          setCart([]);
+          navigate("/orderplaced");
+        }
+      } catch (err) {
+        console.error("placeOrder error:", err);
+        Swal.fire("Error", "Server error while placing order", "error");
       }
-      
-
-      if (!cardName || cardName.trim().length < 3) {
-        Swal.fire("Invalid Name", "Please enter name on the card.", "error");
-        cardNameInput.style.border="1px solid red";
-        return;
-      }
-      else {
-        cardNameInput.style.border = "1px solid #dfe9f6";
-      }
-
-      if (!cardExpiry || cardExpiry.length !== 5 || !/^\d{2}\/\d{2}$/.test(cardExpiry)) {
-        Swal.fire("Invalid Expiry", "Please enter expiry date in MM/YY format.", "error");
-        cardMonthYearInput.style.border="1px solid red"
-        return;
-      }
-      else {
-        cardMonthYearInput.style.border = "1px solid #dfe9f6";
-      }
-
-      if (!cardCVV || cardCVV.length !== 3) {
-        Swal.fire("Invalid CVV", "Please enter a valid 3-digit CVV.", "error");
-        cardCvvInput.style.border="1px solid red"
-        return;
-      }
-      else {
-        cardCvvInput.style.border = "1px solid #dfe9f6";
-      }
     }
-
-    if (!fullName || !mobile || !userAddress) {
-    Swal.fire("Missing address", "Please provide delivery address details.", "warning");
-    return;
-    }
-
-    if (cartItems.length === 0) {
-    Swal.fire("Cart Empty", "There are no items in your cart.", "error");
-    return;
-    }
-    const getItemImage = (item) => {
-    if (item.image && typeof item.image === "string" && item.image.trim()) return item.image;
-    if (item.photoUrl && typeof item.photoUrl === "string" && item.photoUrl.trim()) return item.photoUrl;
-    try {
-    return renderImageSrc(item);
-    } catch {
-    return ""; 
-    }
-    };
-
-    const items = cartItems.map((it, idx) => {
-    const productId = it._id || it.productId || it.id || "";
-    const name = it.title || it.name || it.productName || `Product ${idx + 1}`;
-    const price = Number(it.price || it.amount || 0);
-    const quantity = Number(it.quantity || it.qty || 1);
-    const image = getItemImage(it);
-
-    return { productId, name, price, quantity, image };
-    });
-    for (let i = 0; i < items.length; i++) {
-    const it = items[i];
-    if (!it.productId || !it.name || !it.price || !it.quantity || !it.image) {
-    Swal.fire("Invalid cart item", `Invalid cart item at index ${i}. Required: productId, name, price, quantity, image`, "error");
-    return;
-    }
-    }
-    const totalAmount = items.reduce((s, it) => s + it.price * it.quantity, 0);
-    const addressObj = typeof userAddress === "string"
-    ? { fullName, phoneNo: mobile, houseNo: "", street: userAddress, city: "", state: "", pincode: "" }
-    : {
-    fullName: userAddress.fullName || fullName,
-    phoneNo: userAddress.phoneNo || mobile,
-    houseNo: userAddress.houseNo || "",
-    street: userAddress.street || "",
-    city: userAddress.city || "",
-    state: userAddress.state || "",
-    pincode: userAddress.pincode || ""
-    };
-
-    const payload = {
-    userName: currentUser,
-    address: addressObj,
-    items,
-    totalAmount
-    };
-
-    console.log("PlaceOrder payload ->", payload);
-
-    const res = await fetch("https://onlineshoppingapplicationbackend.onrender.com/api/products/placeOrder", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-    console.log("PlaceOrder response ->", data);
-
-    if (data.success) {
-
-    // SAVE ENTIRE ORDER PAYLOAD FOR ORDERPLACED PAGE
-    const clientOrder = {
-    userName: currentUser,
-    address: addressObj,
-    items: items,
-    totalAmount: totalAmount,
-    placedAt: new Date().toISOString()
-    };
-
-    localStorage.setItem("clientPlacedOrder", JSON.stringify(clientOrder));
-
-    Swal.fire("Success", "Order placed successfully!", "success");
-
-    localStorage.removeItem("cart");
-    setCart([]);
-
-    navigate("/orderplaced");
-    }
-
-    } catch (err) {
-    console.error("placeOrder error:", err);
-    Swal.fire("Error", "Server error while placing order", "error");
-    }
-    }
+    
 
 
 
@@ -358,7 +392,7 @@
     </div>
     </div>
     ))}
-    <div className="address-tile add">+ Add Address</div>
+    {/* <div className="address-tile add">+ Add Address</div> */}
     </div>
     </div>
     </div>
