@@ -1,5 +1,6 @@
   import React, { useEffect, useState } from "react";
   import { useParams, Link } from "react-router-dom";
+  import './Products.css'
 
   export default function Products() {
   const { category } = useParams();
@@ -7,16 +8,26 @@
   const [cartUI, setCartUI] = useState({});
   const [sideCart, setSideCart] = useState([]); 
   const [subtotal, setSubtotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [cartLoading, setCartLoading] = useState(false);
+
 
 
   // LOAD PRODUCTS
   useEffect(() => {
-  fetch(`https://onlineshoppingapplicationbackend.onrender.com/products/${category}`)
-  .then((res) => res.json())
-  .then((data) => {
-  if (data.success) setProducts(data.data);
-  });
+    setLoading(true);
+    setProducts([]); 
+  
+    fetch(`https://onlineshoppingapplicationbackend.onrender.com/products/${category}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setProducts(data.data);
+      })
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
   }, [category]);
+  
+  
 
   // LOAD RIGHT PANEL CART
   const loadCartPanel = () => {
@@ -28,7 +39,7 @@
   setSubtotal(total);
   };
 
-  // ADD TO CART
+
   const addToGlobalCart = (product) => {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const exist = cart.find((c) => c._id === product._id);
@@ -50,6 +61,89 @@
   loadCartPanel();
   };
 
+  const ShimmerLoader = () => {
+    return Array.from({ length: 6 }).map((_, index) => (
+      <div
+        key={index}
+        style={{
+          display: "flex",
+          gap: "20px",
+          marginBottom: "20px",
+          padding: "15px",
+          border: "1px solid #e0e0e0",
+          borderRadius: "10px",
+          background: "#fff",
+        }}
+      >
+        <div
+          className="shimmer"
+          style={{
+            width: "208px",
+            height: "210px",
+            borderRadius: "8px",
+          }}
+        />
+  
+        <div style={{ flex: 1 }}>
+          <div className="shimmer" style={{ width: "60%", height: "20px", marginBottom: "10px" }} />
+          <div className="shimmer" style={{ width: "40%", height: "26px", marginBottom: "10px" }} />
+          <div className="shimmer" style={{ width: "30%", height: "14px", marginBottom: "10px" }} />
+          <div className="shimmer" style={{ width: "90%", height: "14px" }} />
+        </div>
+      </div>
+    ));
+  };
+
+  const CartShimmer = () => {
+    return Array.from({ length: 3 }).map((_, index) => (
+      <div
+        key={index}
+        style={{
+          marginBottom: "20px",
+          borderBottom: "1px solid #ccc",
+          paddingBottom: "15px",
+         
+          
+        }}
+      >
+        <div
+          className="shimmer"
+          style={{
+            width: "100%",
+            height: "15px",
+            marginBottom: "10px",
+            
+            
+            
+          }}
+        />
+  
+        <div
+          className="shimmer"
+          style={{
+            width: "60%",
+            height: "10px",
+            margin: "0 auto 10px",
+            
+          }}
+        />
+  
+        <div
+          className="shimmer"
+          style={{
+            width: "30%",
+            height: "20px",
+            margin: "0 auto",
+            borderRadius: "30px",
+           
+          }}
+        />
+      </div>
+    ));
+  };
+  
+  
+
   // UPDATE CART QTY
   const updateGlobalCartQty = (id, change) => {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -58,10 +152,16 @@
   .map((c) => (c._id === id ? { ...c, quantity: c.quantity + change } : c))
   .filter((c) => c.quantity > 0);
 
-  localStorage.setItem("cart", JSON.stringify(cart));
-  window.dispatchEvent(new Event("cartUpdated"));
+  setCartLoading(true);
+
+localStorage.setItem("cart", JSON.stringify(cart));
+window.dispatchEvent(new Event("cartUpdated"));
+
+setTimeout(() => {
   loadCartPanel();
-  };
+  setCartLoading(false);
+}, 1000); // shimmer duration
+  }
 
   // IMAGE CONVERTER
   const convertImg = (photo) => {
@@ -126,7 +226,7 @@
   color:"#878787"
   }}>Check each product page for other buying options.</p>
 
-  {products.map((p) => {
+  {loading ? <ShimmerLoader /> : products.map((p) => {
   const qty = cartUI[p._id] || 0;
 
   return (
@@ -319,7 +419,8 @@
   </button>
   </Link>
   
-  {sideCart.map((item) => (
+  {cartLoading ? 
+  <CartShimmer /> : sideCart.map((item) => (
   <div
   key={item._id}
   style={{
