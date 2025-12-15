@@ -11,6 +11,8 @@ export default function Login() {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
@@ -19,117 +21,67 @@ export default function Login() {
     e.preventDefault();
 
     if (!form.userName.trim()) {
-      return Swal.fire({
-        title: "Username Required!",
-        text: "Please enter your username.",
-        icon: "warning",
-      });
+      return Swal.fire("Username Required!", "Please enter your username.", "warning");
     }
 
     if (!form.password.trim()) {
-      return Swal.fire({
-        title: "Password Required!",
-        text: "Please enter your password.",
-        icon: "warning",
-      });
+      return Swal.fire("Password Required!", "Please enter your password.", "warning");
     }
 
-    // ==== LOGIN API ====
-    const res = await fetch("https://onlineshoppingapplicationbackend.onrender.com/api/products/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      setLoading(true); // ⭐ show overlay spinner
 
-    const data = await res.json();
-
-    // if (data.success) {
-      
-    //   window.dispatchEvent(
-    //     new CustomEvent("address", {
-    //       detail: {
-    //         fullName: data.user.fullName,
-    //         address: data.user.address,
-    //         mobile:data.user.phoneNo,
-    //         loginStatus: data.user.loginStatus
-    //       },
-    //     })
-    //   );
-
-    //   window.dispatchEvent(
-    //     new CustomEvent("userLoggedIn", { detail: data.user },{detail:data.address})
-    //   );
-
-    //   localStorage.setItem("isLoggedIn", "true");
-
-    //   localStorage.setItem(
-    //     "userAddress",
-    //     JSON.stringify({
-    //       fullName: data.user.fullName,
-    //       address: data.user.address,
-    //       mobile: data.user.phoneNo
-    //     })
-    //   );
-      
-      
-
-    //   Swal.fire({
-    //     title: "🎉 Login Successful!",
-    //     text: "Welcome back!",
-    //     icon: "success",
-    //     confirmButtonText: "Continue",
-    //   }).then(() => navigate(localStorage.getItem("redirectAfterLogin") || "/"));
-
-      
-    //   setForm({ userName: "", password: "" });
-
-    //   return;
-    // }
-
-    if (data.success) {
-
-      localStorage.setItem("userName", data.user.userName);
-
-      window.currentLoginStatus = data.user.loginStatus;
-      window.currentUserName = data.user.userName; 
-    
-      window.dispatchEvent(
-        new CustomEvent("userLoggedIn", { 
-          detail: {
-            userName: data.user.userName,
-            fullName: data.user.fullName,
-            address: data.user.address,
-            mobile: data.user.phoneNo,
-            loginStatus: data.user.loginStatus
-          }
-        })
+      const res = await fetch(
+        "https://onlineshoppingapplicationbackend.onrender.com/api/products/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
       );
-    
-      Swal.fire({
-        title: "🎉 Login Successful!",
-        text: "Welcome back!",
-        icon: "success",
-        confirmButtonText: "Continue",
-      }).then(() => navigate(localStorage.getItem("redirectAfterLogin") || "/cart"));
-    
-      return;
+
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem("userName", data.user.userName);
+
+        window.currentLoginStatus = data.user.loginStatus;
+        window.currentUserName = data.user.userName;
+
+        window.dispatchEvent(
+          new CustomEvent("userLoggedIn", {
+            detail: {
+              userName: data.user.userName,
+              fullName: data.user.fullName,
+              address: data.user.address,
+              mobile: data.user.phoneNo,
+              loginStatus: data.user.loginStatus,
+            },
+          })
+        );
+
+        Swal.fire("🎉 Login Successful!", "Welcome back!", "success").then(() =>
+          navigate(localStorage.getItem("redirectAfterLogin") || "/cart")
+        );
+        return;
+      }
+
+      Swal.fire("⚠ Login Failed!", data.message || "Invalid credentials", "error");
+    } catch (err) {
+      Swal.fire("Error", "Something went wrong!", "error");
+    } finally {
+      setLoading(false); 
     }
-    
-    
-
-    // LOGIN FAILED
-    Swal.fire({
-      title: "⚠ Login Failed!",
-      text: data.message || "Invalid username or password",
-      icon: "error",
-      confirmButtonText: "Retry",
-    });
   }
-
-  
 
   return (
     <div className="login-container">
+      {loading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+        </div>
+      )}
+
       <div className="login-card">
         <div className="login-left">
           <h2>Welcome Back</h2>
@@ -137,34 +89,31 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <input
+            autoComplete="off"
               type="text"
               name="userName"
-              autoComplete="off"
               placeholder="Enter Username / Email"
               value={form.userName}
               onChange={handleChange}
             />
 
             <input
+            autoComplete="off"
               type="password"
               name="password"
-              autoComplete="off"
               placeholder="Enter Password"
               value={form.password}
               onChange={handleChange}
             />
 
-            <button className="login-btn">Login</button>
+            <button className="login-btn" disabled={loading}>
+              Login
+            </button>
           </form>
 
           <p className="register-link">
             New User?{" "}
-            <span
-              style={{ color: "blue", cursor: "pointer" }}
-              onClick={() => navigate("/register")}
-            >
-              Register Now
-            </span>
+            <span style={{ color: "blue", cursor: "pointer",fontFamily:"sans-serif" }}onClick={() => navigate("/register")}>Register Now</span>
           </p>
         </div>
 

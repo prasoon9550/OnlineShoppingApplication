@@ -141,7 +141,7 @@ export default function Register() {
 
           <p className="login-link">
             Already have an account? <span
-              style={{ color: "blue", cursor: "pointer" }}
+              style={{ color: "blue", cursor: "pointer",fontFamily:"sans-serif" }}
               onClick={() => navigate("/login")}>
               Login
             </span>
