@@ -1,0 +1,62 @@
+.shimmer {
+    background: linear-gradient(
+      90deg,
+      #f0f0f0 25%,
+      #e6e6e6 37%,
+      #f0f0f0 63%
+    );
+    background-size: 400% 100%;
+    animation: shimmer 1.2s ease-in-out infinite;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -400px 0;
+    }
+    100% {
+      background-position: 400px 0;
+    }
+  }
+  
+  /* Cart shimmer blocks */
+  .cart-shimmer {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .shimmer-img {
+    width: 180px;
+    height: 200px;
+    border-radius: 8px;
+  }
+  
+  .shimmer-lines {
+    flex: 1;
+  }
+  
+  .shimmer-line {
+    height: 20px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+  }
+  .qty-loader {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #f3c200;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1.6s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
