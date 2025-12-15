@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./AllOrders.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function AllOrders() {
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true); // ⭐ shimmer state
+  const [loading, setLoading] = useState(true);
   const userName = localStorage.getItem("userName");
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchOrders() {
@@ -15,12 +17,12 @@ export default function AllOrders() {
         );
 
         if (res.data.success) {
-          setOrders(res.data.data);
+          setOrders(res.data.data || []);
         }
       } catch (err) {
         console.log("Error fetching orders:", err);
       } finally {
-        setLoading(false); // ⭐ stop shimmer
+        setLoading(false);
       }
     }
 
@@ -55,8 +57,20 @@ export default function AllOrders() {
           </div>
         ))}
 
+      {/* ⭐ NO ORDERS STATE */}
+      {!loading && orders.length === 0 && (
+        <div className="no-orders-box">
+          <h2>No orders yet 😕</h2>
+          <p>You haven’t placed any orders. Start shopping now!</p>
+          <button className="shop-now-btn" onClick={() => navigate("/")}>
+            Shop Now
+          </button>
+        </div>
+      )}
+
       {/* ⭐ REAL DATA */}
       {!loading &&
+        orders.length > 0 &&
         orders.map((order) => (
           <div className="amz-order-box" key={order._id}>
             <div className="amz-order-top">
