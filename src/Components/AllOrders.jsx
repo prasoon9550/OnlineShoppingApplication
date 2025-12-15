@@ -4,7 +4,8 @@ import axios from "axios";
 
 export default function AllOrders() {
   const [orders, setOrders] = useState([]);
-  const userName = localStorage.getItem("userName"); // logged in user
+  const [loading, setLoading] = useState(true); // ⭐ shimmer state
+  const userName = localStorage.getItem("userName");
 
   useEffect(() => {
     async function fetchOrders() {
@@ -14,10 +15,12 @@ export default function AllOrders() {
         );
 
         if (res.data.success) {
-          setOrders(res.data.data); // API returns array of orders
+          setOrders(res.data.data);
         }
       } catch (err) {
         console.log("Error fetching orders:", err);
+      } finally {
+        setLoading(false); // ⭐ stop shimmer
       }
     }
 
@@ -30,59 +33,77 @@ export default function AllOrders() {
         <p className="your-order">Your Orders</p>
       </div>
 
-      {orders.map((order) => (
-        <div className="amz-order-box" key={order._id}>
-          
-          {/* TOP SECTION */}
-          <div className="amz-order-top">
-            <p>
-              <strong>ORDER PLACED</strong>
-              <br />
-              {new Date(order.createdAt).toDateString()}
-            </p>
+      {/* ⭐ SHIMMER WHILE LOADING */}
+      {loading &&
+        Array.from({ length: 3 }).map((_, i) => (
+          <div className="amz-order-box shimmer-box" key={i}>
+            <div className="amz-order-top">
+              <div className="shimmer shimmer-line"></div>
+              <div className="shimmer shimmer-line"></div>
+              <div className="shimmer shimmer-line"></div>
+            </div>
 
-            <p>
-              <strong>TOTAL</strong>
-              <br />₹{order.totalAmount}
-            </p>
+            <div className="amz-order-bottom">
+              <div className="shimmer shimmer-img"></div>
 
-            <p>
-              <strong>SHIP TO</strong>
-              <br />
-              {order.address.fullName}
-            </p>
-
-            <div className="amz-links">
-              <a href="#">Order # {order.orderId}</a>
+              <div className="amz-middle">
+                <div className="shimmer shimmer-line"></div>
+                <div className="shimmer shimmer-line short"></div>
+                <div className="shimmer shimmer-btn"></div>
+              </div>
             </div>
           </div>
+        ))}
 
-          {/* BOTTOM SECTION */}
-          <div className="amz-order-bottom">
-            <img
-              src={order.items[0].image}
-              alt="product"
-              className="amz-img"
-            />
-
-            <div className="amz-middle">
-              <p className="amz-arriving">
-               
+      {/* ⭐ REAL DATA */}
+      {!loading &&
+        orders.map((order) => (
+          <div className="amz-order-box" key={order._id}>
+            <div className="amz-order-top">
+              <p>
+                <strong>ORDER PLACED</strong>
+                <br />
+                {new Date(order.createdAt).toDateString()}
               </p>
 
-              <p className="amz-title">{order.items[0].name}</p>
+              <p>
+                <strong>TOTAL</strong>
+                <br />₹{order.totalAmount}
+              </p>
 
-              <button className="amz-buy-again">Buy it again</button>
+              <p>
+                <strong>SHIP TO</strong>
+                <br />
+                {order.address.fullName}
+              </p>
+
+              <div className="amz-links">
+                <a href="#">Order # {order.orderId}</a>
+              </div>
             </div>
 
-            <div className="amz-actions">
-              <button className="yellow-btn">Track package</button>
-              <button className="white-btn red-text">Cancel items</button>
-              <button className="black-btn blk-text">Return or replace items</button>
+            <div className="amz-order-bottom">
+              <img
+                src={order.items[0].image}
+                alt="product"
+                className="amz-img"
+              />
+
+              <div className="amz-middle">
+                <p className="amz-title">{order.items[0].name}</p>
+                <button className="amz-buy-again">Buy it again</button>
+              </div>
+
+              <div className="amz-actions">
+                <button className="yellow-btn">Track package</button>
+                <button className="white-btn red-text">Cancel items</button>
+                <button className="black-btn blk-text">
+                  Return or replace items
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
     </>
   );
 }

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import "./Register.css";
 
 export default function Register() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false); // ⭐ loader state
   const [form, setForm] = useState({
     firstName: "",
     middleName: "",
@@ -22,138 +24,153 @@ export default function Register() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true); // ⭐ show loader
 
-    const res = await fetch("https://onlineshoppingapplicationbackend.onrender.com/api/products/userRegister", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch(
+        "https://onlineshoppingapplicationbackend.onrender.com/api/products/userRegister",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
 
-    const data = await res.json();
-    if (data.success) {
+      const data = await res.json();
+      setLoading(false); // ⭐ hide loader
+
+      if (data.success) {
         Swal.fire({
-            title: "🎉 Registration Successful!",
-            text: "Your account has been created successfully.",
-            icon: "success",
-            confirmButtonText: "OK",
-          }).then(() => {
-            navigate("/login");
-          });
-          
+          title: "🎉 Registration Successful!",
+          text: "Your account has been created successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => navigate("/login"));
 
-      setForm({
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        phoneNo: "",
-        email: "",
-        address: "",
-        userName: "",
-        password: "",
-      });
-    } else {
-      Swal.fire({
-        title: "⚠ Registration Failed!",
-        text: data.message || data.error,
-        icon: "error",
-        confirmButtonText: "Retry",
-      });
+        setForm({
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          phoneNo: "",
+          email: "",
+          address: "",
+          userName: "",
+          password: "",
+        });
+      } else {
+        Swal.fire("⚠ Registration Failed", data.message || data.error, "error");
+      }
+    } catch (error) {
+      setLoading(false);
+      Swal.fire("Error", "Something went wrong. Try again!", "error");
     }
   }
 
   return (
-    <div className="reg-container">
-      <div className="reg-card">
-        
-        <div className="reg-left">
-          <h2>Create Account ✨</h2>
-          <p className="subtitle">Start your journey with us!</p>
-
-          <form onSubmit={handleSubmit}>
-
-            <div className="row">
-              <input
-                type="text"
-                name="firstName" autoComplete="off"
-                placeholder="First Name"
-                value={form.firstName}
-                onChange={handleChange}
-               
-              />
-
-              <input
-                type="text"
-                name="lastName" autoComplete="off"
-                placeholder="Last Name"
-                value={form.lastName}
-                onChange={handleChange}
-                
-              />
-            </div>
-
-            <div className="row">
-              <input
-                type="number"
-                name="phoneNo" autoComplete="off"
-                placeholder="Phone Number"
-                value={form.phoneNo}
-                onChange={handleChange}
-              />
-
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address" autoComplete="off"
-                value={form.email}
-                onChange={handleChange}
-              />
-            </div>
-
-            
-
-            <div className="row">
-              <input
-                type="text"
-                name="userName"
-                placeholder="Username" autoComplete="off"
-                value={form.userName}
-                onChange={handleChange}
-              />
-
-              <input
-                type="password"
-                name="password" autoComplete="off"
-                placeholder="Password"
-                value={form.password}
-                onChange={handleChange}
-              />
-            </div>
-
-            <textarea
-              name="address"
-              placeholder="Address" autoComplete="off"
-              value={form.address}
-              onChange={handleChange}
-            ></textarea>
-
-            <button className="reg-btn">Register</button>
-          </form>
-
-          <p className="login-link">
-            Already have an account? <span
-              style={{ color: "blue", cursor: "pointer",fontFamily:"sans-serif" }}
-              onClick={() => navigate("/login")}>
-              Login
-            </span>
-          </p>
+    <>
+      {loading && (
+        <div className="loader-overlay">
+          <div className="multi-spinner"></div>
+          <p>Creating your account...</p>
         </div>
+      )}
 
-        <div className="reg-right">
-          <h3>Welcome to Nxt Trendz</h3>
-          <p>Shop smarter, faster and better!</p>
+      <div className="reg-container">
+        <div className="reg-card">
+          <div className="reg-left">
+            <h2>Create Account ✨</h2>
+            <p className="subtitle">Start your journey with us!</p>
+
+            <form onSubmit={handleSubmit}>
+              <div className="row">
+                <input
+                autoComplete="off"
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={form.firstName}
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                autoComplete="off"
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="row">
+                <input
+                autoComplete="off"
+                  type="number"
+                  name="phoneNo"
+                  placeholder="Phone Number"
+                  value={form.phoneNo}
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                autoComplete="off"
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="row">
+                <input
+                  type="text"
+                  autoComplete="off"
+                  name="userName"
+                  placeholder="Username"
+                  value={form.userName}
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                  type="password"
+                  autoComplete="off"
+                  name="password"
+                  placeholder="Password"
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <textarea
+              autoComplete="off"
+                name="address"
+                placeholder="Address"
+                value={form.address}
+                onChange={handleChange}
+                required
+              />
+
+              <button className="reg-btn" disabled={loading}>
+                Register
+              </button>
+            </form>
+
+            <p className="login-link">
+              Already have an account?{" "}
+              <span style={{ color: "blue", cursor: "pointer",fontFamily:"sans-serif" }}onClick={() => navigate("/login")}>Login</span>
+            </p>
+          </div>
+
+          <div className="reg-right">
+            <h3>Welcome to Nxt Trendz</h3>
+            <p>Shop smarter, faster and better!</p>
+          </div>
         </div>
-
       </div>
-    </div>
+    </>
   );
 }

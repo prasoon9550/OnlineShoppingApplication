@@ -15,6 +15,8 @@
     const [upiId, setUpiId] = useState("");
     const [emiPlan, setEmiPlan] = useState("");
     const [mobile, setMobile] = useState("");
+    const [loading, setLoading] = useState(true);
+
 
     const navigate = useNavigate();
 
@@ -132,13 +134,16 @@
     ];
 
     useEffect(() => {
-    try {
-    const stored = JSON.parse(localStorage.getItem("cart")) || [];
-    setCart(stored);
-    } catch {
-    setCart([]);
-    }
+      try {
+        const stored = JSON.parse(localStorage.getItem("cart")) || [];
+        setCart(stored);
+      } catch {
+        setCart([]);
+      } finally {
+        setTimeout(() => setLoading(false), 800); // ⭐ shimmer delay for smooth UX
+      }
     }, []);
+    
 
     const saveCart = (updated) => {
     setCart(updated);
@@ -392,6 +397,35 @@
     const randomType = ["Visa", "Mastercard", "RuPay"][
     Math.floor(Math.random() * 3)
     ];
+
+    if (loading) {
+      return (
+        <div className="checkout-page fs">
+          <div className="checkout-inner wide">
+            <div className="checkout-left">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="card shimmer-box">
+                  <div className="shimmer shimmer-title"></div>
+                  <div className="shimmer shimmer-line"></div>
+                  <div className="shimmer shimmer-line short"></div>
+                  <div className="shimmer shimmer-rect"></div>
+                </div>
+              ))}
+            </div>
+    
+            <div className="checkout-right">
+              <div className="card shimmer-box sticky">
+                <div className="shimmer shimmer-title"></div>
+                <div className="shimmer shimmer-line"></div>
+                <div className="shimmer shimmer-line"></div>
+                <div className="shimmer shimmer-line short"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
 
     const finalCardType = cardType === "Unknown" ? randomType : cardType;
 
