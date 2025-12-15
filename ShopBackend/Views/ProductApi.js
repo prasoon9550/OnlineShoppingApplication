@@ -200,7 +200,7 @@
     lastName: user.lastName,
     userName: user.userName,
     email: user.email,
-    fullName: user.firstName + " " + user.middleName + " " + user.lastName,
+    fullName: user.firstName + " " + user.lastName,
     phoneNo:user.phoneNo,
     address:user.address,
     loginStatus:user.loginStatus
