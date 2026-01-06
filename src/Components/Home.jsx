@@ -95,20 +95,7 @@ export default function Home() {
           ))}
         </div>
       </div>
-      <div className="img-container">
-        <img
-          src="https://www.shutterstock.com/image-photo/female-stylist-near-rack-modern-600nw-2135889599.jpg"
-          alt=""
-          onError={handleImgError}
-        />
-
-        <img
-          className="ad-img"
-          src="https://assets-static.invideo.io/images/origin/Fashion_Ad_c7b51b5395.JPG"
-          alt=""
-          onError={handleImgError}
-        />
-      </div>
+      
     </div>
   );
 }
